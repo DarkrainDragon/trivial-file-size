@@ -55,7 +55,11 @@ Some platforms (e.g. ABCL) may return 0 when the file does not exist."
                 (and ecl unix))
           (file-size-from-stream file))
       (error ()
-        nil))))
+             ;; In SBCL at least (sb-posix:stat-size (sb-posix:stat path))
+             ;; will error out if the file has Unicode characters in it.
+             ;; file-size-from-stream will handle it correctly, thus allowing
+             ;; this to work even with unicode files.
+        (file-size-from-stream file)))))
 
 #+abcl
 (defun stat/abcl (namestring)
